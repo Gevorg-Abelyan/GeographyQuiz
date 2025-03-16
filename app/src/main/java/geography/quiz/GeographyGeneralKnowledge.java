@@ -5,10 +5,12 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -22,6 +24,9 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
     int totalQuestion = QuestionAnswerGeneralKnowledge.question.length;
     int currentQuestionIndex = 0;
     String selectedAnswer = "";
+    Button selectedButton = null;
+    Handler handler = new Handler();
+    boolean isSubmitClicked = false;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,11 +42,6 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         submitBtn = findViewById(R.id.submit_btn);
         exitImageView = findViewById(R.id.exit_image);
 
-        // Check if any view is null
-        if (totalQuestionsTextView == null || questionTextView == null || ansA == null || ansB == null || ansC == null || ansD == null || submitBtn == null || exitImageView == null) {
-            throw new NullPointerException("One of the views is null. Please check the layout file and IDs.");
-        }
-
         ansA.setOnClickListener(this);
         ansB.setOnClickListener(this);
         ansC.setOnClickListener(this);
@@ -55,22 +55,68 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
 
     @Override
     public void onClick(View view) {
+        if (isSubmitClicked) return;
+
+        resetButtonColors();
+
+        if (view instanceof Button) {
+            Button clickedButton = (Button) view;
+
+            if (clickedButton.getId() == R.id.submit_btn) {
+                isSubmitClicked = true;
+                if (selectedButton == null) {
+                    Toast.makeText(this, "Please select an answer", Toast.LENGTH_SHORT).show();
+                    isSubmitClicked = false;
+                } else {
+                    checkAnswer();
+                }
+            } else {
+                selectedAnswer = clickedButton.getText().toString();
+                selectedButton = clickedButton;
+                clickedButton.setBackgroundColor(Color.MAGENTA);
+            }
+        }
+    }
+
+    void checkAnswer() {
+        String correctAnswer = QuestionAnswerGeneralKnowledge.correctAnswers[currentQuestionIndex];
+
+        if (selectedAnswer.equals(correctAnswer)) {
+            selectedButton.setBackgroundColor(Color.GREEN);
+            score++;
+            handler.postDelayed(() -> {
+                currentQuestionIndex++;
+                isSubmitClicked = false;
+                loadNewQuestion();
+            }, 2000);
+        } else {
+            selectedButton.setBackgroundColor(Color.RED);
+            highlightCorrectAnswer(correctAnswer);
+        }
+    }
+
+    void highlightCorrectAnswer(String correctAnswer) {
+        if (ansA.getText().toString().equals(correctAnswer)) {
+            ansA.setBackgroundColor(Color.GREEN);
+        } else if (ansB.getText().toString().equals(correctAnswer)) {
+            ansB.setBackgroundColor(Color.GREEN);
+        } else if (ansC.getText().toString().equals(correctAnswer)) {
+            ansC.setBackgroundColor(Color.GREEN);
+        } else if (ansD.getText().toString().equals(correctAnswer)) {
+            ansD.setBackgroundColor(Color.GREEN);
+        }
+        handler.postDelayed(() -> {
+            currentQuestionIndex++;
+            isSubmitClicked = false;
+            loadNewQuestion();
+        }, 2000);
+    }
+
+    void resetButtonColors() {
         ansA.setBackgroundColor(Color.WHITE);
         ansB.setBackgroundColor(Color.WHITE);
         ansC.setBackgroundColor(Color.WHITE);
         ansD.setBackgroundColor(Color.WHITE);
-
-        Button clickedButton = (Button) view;
-        if (clickedButton.getId() == R.id.submit_btn) {
-            if (selectedAnswer.equals(QuestionAnswerGeneralKnowledge.correctAnswers[currentQuestionIndex])) {
-                score++;
-            }
-            currentQuestionIndex++;
-            loadNewQuestion();
-        } else {
-            selectedAnswer = clickedButton.getText().toString();
-            clickedButton.setBackgroundColor(Color.MAGENTA);
-        }
     }
 
     void loadNewQuestion() {
@@ -78,20 +124,17 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
             finishQuiz();
             return;
         }
+        resetButtonColors();
         questionTextView.setText(QuestionAnswerGeneralKnowledge.question[currentQuestionIndex]);
         ansA.setText(QuestionAnswerGeneralKnowledge.choices[currentQuestionIndex][0]);
         ansB.setText(QuestionAnswerGeneralKnowledge.choices[currentQuestionIndex][1]);
         ansC.setText(QuestionAnswerGeneralKnowledge.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswerGeneralKnowledge.choices[currentQuestionIndex][3]);
+        selectedButton = null;
     }
 
     void finishQuiz() {
-        String passStatus = "";
-        if (score > totalQuestion * 0.60) {
-            passStatus = "Passed";
-        } else {
-            passStatus = "Failed";
-        }
+        String passStatus = score > totalQuestion * 0.60 ? "Passed" : "Failed";
         new AlertDialog.Builder(this)
                 .setTitle(passStatus)
                 .setMessage("Score is " + score + " out of " + totalQuestion)
@@ -103,6 +146,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
     void restartQuiz() {
         score = 0;
         currentQuestionIndex = 0;
+        isSubmitClicked = false;
         loadNewQuestion();
     }
 

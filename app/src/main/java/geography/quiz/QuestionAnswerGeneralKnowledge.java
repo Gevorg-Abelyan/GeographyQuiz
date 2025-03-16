@@ -12,12 +12,13 @@ public class QuestionAnswerGeneralKnowledge {
             "Which country has the most natural lakes?",
             "What is the highest mountain in North America?",
             "Which of these countries is landlocked?"
+
     };
 
     public static String choices[][] = {
             {"Amazon River", "Nile River", "Yangtze River", "Mississippi River"},
             {"Russia", "China", "USA", "France"},
-            {"Monaco", "San Marino", "Vatican City", "Liechtenstein"},
+            {"Monaco", "San Marino", "Vatican City", "Liechtenstein"}, 
             {"Asia", "Europe", "Africa", "South America"},
             {"Toronto", "Vancouver", "Ottawa", "Montreal"},
             {"Gobi Desert", "Sahara Desert", "Arabian Desert", "Antarctic Desert"},
@@ -38,5 +39,6 @@ public class QuestionAnswerGeneralKnowledge {
             "Canada",
             "Denali (Mount McKinley)",
             "Mongolia"
+
     };
 }
