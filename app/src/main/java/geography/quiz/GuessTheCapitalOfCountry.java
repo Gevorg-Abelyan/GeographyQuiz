@@ -154,7 +154,7 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         new AlertDialog.Builder(this)
                 .setTitle("Are you sure you want to exit?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
-                    Intent intent = new Intent(GuessTheCapitalOfCountry.this, TotalCategories.class);
+                    Intent intent = new Intent(GuessTheCapitalOfCountry.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 })

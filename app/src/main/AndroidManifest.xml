@@ -31,23 +31,26 @@
             android:name=".QuestionAnswerGeneralKnowledge"
             android:exported="false"
             tools:ignore="Instantiatable" />
-        <activity
-            android:name=".TotalCategories"
-            android:exported="false" />
+
         <activity
             android:name=".GuessTheCapitalOfCountry"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".GuessCountryByItsFlag"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".GuessCountryByItsArea"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".GeographyGeneralKnowledge"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.Material3.Light.NoActionBar"
             android:exported="true">
         </activity>
     </application>

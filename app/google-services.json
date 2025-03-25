@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "339613442064",
+    "project_id": "geography-quiz-9023b",
+    "storage_bucket": "geography-quiz-9023b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339613442064:android:9bfc6e913b729be1986a95",
+        "android_client_info": {
+          "package_name": "geography.quiz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDikvoh-VcrlXdqJXHvyLryNQuiQJU2OFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

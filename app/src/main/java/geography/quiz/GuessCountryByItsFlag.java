@@ -153,7 +153,7 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
         new AlertDialog.Builder(this)
                 .setTitle("Are you sure you want to exit?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
-                    Intent intent = new Intent(GuessCountryByItsFlag.this, TotalCategories.class);
+                    Intent intent = new Intent(GuessCountryByItsFlag.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 })

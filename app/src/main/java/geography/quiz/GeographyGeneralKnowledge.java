@@ -154,7 +154,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         new AlertDialog.Builder(this)
                 .setTitle("Are you sure you want to exit?")
                 .setPositiveButton("Yes", (dialogInterface, i) -> {
-                    Intent intent = new Intent(GeographyGeneralKnowledge.this, TotalCategories.class);
+                    Intent intent = new Intent(GeographyGeneralKnowledge.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 })
