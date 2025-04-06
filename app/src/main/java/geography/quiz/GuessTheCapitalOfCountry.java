@@ -15,13 +15,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.OnClickListener {
-    TextView totalQuestionsTextView;
+    TextView totalQuestionsTextView, scoreTextView;
     TextView questionTextView;
     Button ansA, ansB, ansC, ansD;
     Button submitBtn;
     ImageView exitImageView;
     int score = 0;
-    int totalQuestion = QuestionAnswerGeneralKnowledge.question.length;
+    int totalQuestion = QuestionAnswerCapital.question.length;
     int currentQuestionIndex = 0;
     String selectedAnswer = "";
     Button selectedButton = null;
@@ -32,8 +32,9 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_geography_general_knowledge);
+        setContentView(R.layout.activity_guess_the_capital_of_country);
         totalQuestionsTextView = findViewById(R.id.total_question);
+        scoreTextView = findViewById(R.id.score_text);
         questionTextView = findViewById(R.id.question);
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
@@ -49,7 +50,8 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         submitBtn.setOnClickListener(this);
         exitImageView.setOnClickListener(view -> showExitConfirmationDialog());
 
-        totalQuestionsTextView.setText("Total questions : " + totalQuestion);
+        totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        scoreTextView.setText("Score: " + score);
         loadNewQuestion();
     }
 
@@ -84,9 +86,11 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         if (selectedAnswer.equals(correctAnswer)) {
             selectedButton.setBackgroundColor(Color.GREEN);
             score++;
+            scoreTextView.setText("Score: " + score);
             handler.postDelayed(() -> {
                 currentQuestionIndex++;
                 isSubmitClicked = false;
+                totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
                 loadNewQuestion();
             }, 2000);
         } else {
@@ -108,6 +112,7 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         handler.postDelayed(() -> {
             currentQuestionIndex++;
             isSubmitClicked = false;
+            totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
             loadNewQuestion();
         }, 2000);
     }
@@ -147,6 +152,8 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         score = 0;
         currentQuestionIndex = 0;
         isSubmitClicked = false;
+        totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        scoreTextView.setText("Score: " + score);
         loadNewQuestion();
     }
 

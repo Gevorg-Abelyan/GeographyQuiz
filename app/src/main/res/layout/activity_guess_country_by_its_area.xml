@@ -7,12 +7,12 @@
     android:layout_height="match_parent"
     android:background="@drawable/nackground"
     android:padding="24dp"
-    tools:context=".GuessCountryByItsFlag">
+    tools:context=".GuessCountryByItsArea">
 
     <ImageView
         android:id="@+id/flag_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"
         />
@@ -30,18 +30,29 @@
         android:id="@+id/total_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/flag_image"
         android:layout_centerHorizontal="true"
         android:paddingTop="18dp"
-        android:text="Total Questions"
-        android:textSize="20dp" />
+        android:textStyle="bold"
+        android:text="Question 0/10"
+        android:textSize="22dp" />
+
+    <TextView
+        android:id="@+id/score_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="270dp"
+        android:paddingTop="18dp"
+        android:text="Score: 0"
+        android:textSize="22dp"
+        android:textStyle="bold"/>
 
     <LinearLayout
         android:id="@+id/choices_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/total_question"
-        android:layout_centerInParent="true"
+        android:layout_below="@id/flag_image"
+        android:layout_centerHorizontal="true"
         android:orientation="vertical"
         android:layout_marginTop="20dp">
 

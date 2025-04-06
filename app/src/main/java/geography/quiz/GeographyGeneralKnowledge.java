@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class GeographyGeneralKnowledge extends AppCompatActivity implements View.OnClickListener {
     TextView totalQuestionsTextView;
     TextView questionTextView;
+    TextView scoreTextView;
     Button ansA, ansB, ansC, ansD;
     Button submitBtn;
     ImageView exitImageView;
@@ -35,6 +36,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         setContentView(R.layout.activity_geography_general_knowledge);
         totalQuestionsTextView = findViewById(R.id.total_question);
         questionTextView = findViewById(R.id.question);
+        scoreTextView = findViewById(R.id.score_text);
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
         ansC = findViewById(R.id.ans_C);
@@ -49,7 +51,8 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         submitBtn.setOnClickListener(this);
         exitImageView.setOnClickListener(view -> showExitConfirmationDialog());
 
-        totalQuestionsTextView.setText("Total questions : " + totalQuestion);
+        totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        scoreTextView.setText("Score: " + score);
         loadNewQuestion();
     }
 
@@ -84,9 +87,11 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         if (selectedAnswer.equals(correctAnswer)) {
             selectedButton.setBackgroundColor(Color.GREEN);
             score++;
+            scoreTextView.setText("Score: " + score);
             handler.postDelayed(() -> {
                 currentQuestionIndex++;
                 isSubmitClicked = false;
+                totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
                 loadNewQuestion();
             }, 2000);
         } else {
@@ -108,6 +113,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         handler.postDelayed(() -> {
             currentQuestionIndex++;
             isSubmitClicked = false;
+            totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
             loadNewQuestion();
         }, 2000);
     }
@@ -147,6 +153,8 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         score = 0;
         currentQuestionIndex = 0;
         isSubmitClicked = false;
+        totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        scoreTextView.setText("Score: " + score);
         loadNewQuestion();
     }
 

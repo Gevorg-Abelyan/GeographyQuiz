@@ -15,7 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GuessCountryByItsArea extends AppCompatActivity implements View.OnClickListener {
-    TextView totalQuestionsTextView;
+    TextView totalQuestionsTextView, scoreTextView;
     ImageView flagImageView, exitImageView;
     Button ansA, ansB, ansC, ansD;
     Button submitBtn;
@@ -33,6 +33,7 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_country_by_its_flag);
         totalQuestionsTextView = findViewById(R.id.total_question);
+        scoreTextView = findViewById(R.id.score_text);
         flagImageView = findViewById(R.id.flag_image);
         exitImageView = findViewById(R.id.exit_image);
         ansA = findViewById(R.id.ans_A);
@@ -48,7 +49,8 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         submitBtn.setOnClickListener(this);
         exitImageView.setOnClickListener(view -> showExitConfirmationDialog());
 
-        totalQuestionsTextView.setText("Total questions : " + totalQuestion);
+        totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        scoreTextView.setText("Score: " + score);
         loadNewQuestion();
     }
 
@@ -83,9 +85,11 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         if (selectedAnswer.equals(correctAnswer)) {
             selectedButton.setBackgroundColor(Color.GREEN);
             score++;
+            scoreTextView.setText("Score: " + score);
             handler.postDelayed(() -> {
                 currentQuestionIndex++;
                 isSubmitClicked = false;
+                totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
                 loadNewQuestion();
             }, 2000);
         } else {
@@ -107,6 +111,7 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         handler.postDelayed(() -> {
             currentQuestionIndex++;
             isSubmitClicked = false;
+            totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
             loadNewQuestion();
         }, 2000);
     }
@@ -146,6 +151,8 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         score = 0;
         currentQuestionIndex = 0;
         isSubmitClicked = false;
+        totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
+        scoreTextView.setText("Score: " + score);
         loadNewQuestion();
     }
 

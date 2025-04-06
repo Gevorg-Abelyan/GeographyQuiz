@@ -1,6 +1,5 @@
 package geography.quiz;
 
-
 public class QuestionAnswerFlags {
     public static int[] flagImages = {
             R.drawable.mexico,
@@ -16,13 +15,13 @@ public class QuestionAnswerFlags {
     };
     public static String[][] choices = {
             {"Mexico", "USA", "Brazil", "Argentina"},
-            {"England", "Scotland", "Wales", "Ireland"},
+            {"Scotland", "England", "Wales", "Ireland"},
             {"Armenia", "Georgia", "Azerbaijan", "Turkey"},
             {"China", "Japan", "South Korea", "Vietnam"},
-            {"Japan", "China", "South Korea", "Thailand"},
+            {"Thailand", "China", "South Korea", "Japan"},
             {"Canada", "USA", "Australia", "France"},
-            {"France", "Italy", "Spain", "Germany"},
-            {"Italy", "France", "Portugal", "Spain"},
+            {"Germany", "Italy", "Spain", "France"},
+            {"France", "Italy", "Portugal", "Spain"},
             {"Russia", "Ukraine", "Belarus", "Poland"},
             {"Germany", "Austria", "Netherlands", "Sweden"}
     };
