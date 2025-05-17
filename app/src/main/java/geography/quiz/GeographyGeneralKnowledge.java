@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -167,12 +169,25 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         loadNewQuestion();
     }
 
-    private void updateScoreInFirebase(int score) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void updateScoreInFirebase(int newScore) {
+        FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String uid = user.getUid();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(uid).child("score");
-            ref.setValue(score);
+            DatabaseReference ref = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("Users").child(uid).child("score");
+            ref.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                    int currentScore = 0;
+                    if (snapshot.exists()) {
+                        Integer value = snapshot.getValue(Integer.class);
+                        if (value != null) currentScore = value;
+                    }
+                    int updatedScore = currentScore + newScore;
+                    ref.setValue(updatedScore);
+                }
+                @Override
+                public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+            });
         }
     }
 

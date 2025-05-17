@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnClickListener {
@@ -165,12 +166,25 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
         loadNewQuestion();
     }
 
-    private void updateScoreInFirebase(int score) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void updateScoreInFirebase(int newScore) {
+        FirebaseUser user = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String uid = user.getUid();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(uid).child("score");
-            ref.setValue(score);
+            DatabaseReference ref = com.google.firebase.database.FirebaseDatabase.getInstance().getReference("Users").child(uid).child("score");
+            ref.addListenerForSingleValueEvent(new com.google.firebase.database.ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull com.google.firebase.database.DataSnapshot snapshot) {
+                    int currentScore = 0;
+                    if (snapshot.exists()) {
+                        Integer value = snapshot.getValue(Integer.class);
+                        if (value != null) currentScore = value;
+                    }
+                    int updatedScore = currentScore + newScore;
+                    ref.setValue(updatedScore);
+                }
+                @Override
+                public void onCancelled(@NonNull com.google.firebase.database.DatabaseError error) {}
+            });
         }
     }
 
