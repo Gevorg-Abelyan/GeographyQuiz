@@ -11,8 +11,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class GeographyGeneralKnowledge extends AppCompatActivity implements View.OnClickListener {
     TextView totalQuestionsTextView;
@@ -50,6 +53,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         ansD.setOnClickListener(this);
         submitBtn.setOnClickListener(this);
         exitImageView.setOnClickListener(view -> showExitConfirmationDialog());
+
 
         totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
         scoreTextView.setText("Score: " + score);
@@ -144,7 +148,12 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         new AlertDialog.Builder(this)
                 .setTitle(passStatus)
                 .setMessage("Score is " + score + " out of " + totalQuestion)
-                .setPositiveButton("Restart", (dialogInterface, i) -> restartQuiz())
+                .setPositiveButton("Exit", (dialogInterface, i) -> {
+                    updateScoreInFirebase(score); // Save score to Firebase
+                    Intent intent = new Intent(GeographyGeneralKnowledge.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
                 .setCancelable(false)
                 .show();
     }
@@ -156,6 +165,15 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
         scoreTextView.setText("Score: " + score);
         loadNewQuestion();
+    }
+
+    private void updateScoreInFirebase(int score) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(uid).child("score");
+            ref.setValue(score);
+        }
     }
 
     void showExitConfirmationDialog() {

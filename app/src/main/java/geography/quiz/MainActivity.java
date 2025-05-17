@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,9 +17,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
-    Button button;
     TextView textView;
     FirebaseUser user;
+    ImageView settingsIcon, leaderboardIcon, accountIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         auth = FirebaseAuth.getInstance();
-        button = findViewById(R.id.logout);
         textView = findViewById(R.id.user_details);
         user = auth.getCurrentUser();
 
@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Logout functionality
-        button.setOnClickListener(view -> showLogoutConfirmationDialog());
 
         // Category selection
         LinearLayout geographyLayout = findViewById(R.id.geographyLayout);
@@ -52,23 +51,14 @@ public class MainActivity extends AppCompatActivity {
         flagLayout.setOnClickListener(view -> openActivity(GuessCountryByItsFlag.class));
         areaLayout.setOnClickListener(view -> openActivity(GuessCountryByItsArea.class));
         capitalLayout.setOnClickListener(view -> openActivity(GuessTheCapitalOfCountry.class));
+        settingsIcon = findViewById(R.id.navigation_settings);
+        leaderboardIcon = findViewById(R.id.navigation_quiz);
+        accountIcon = findViewById(R.id.navigation_account);
+        settingsIcon.setOnClickListener(view -> startActivity(new Intent(this, Settings.class)));
+        leaderboardIcon.setOnClickListener(view -> startActivity(new Intent(this, Leaderboard.class)));
+        accountIcon.setOnClickListener(view -> startActivity(new Intent(this, Account.class)));
     }
 
-    private void showLogoutConfirmationDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Logout")
-                .setMessage("Are you sure you want to logout?")
-                .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    // Perform logout
-                    FirebaseAuth.getInstance().signOut();
-                    Intent intent = new Intent(getApplicationContext(), Login.class);
-                    startActivity(intent);
-                    finish();
-                })
-                .setNegativeButton(android.R.string.no, null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-    }
 
     private void openActivity(Class<?> activityClass) {
         Intent intent = new Intent(MainActivity.this, activityClass);

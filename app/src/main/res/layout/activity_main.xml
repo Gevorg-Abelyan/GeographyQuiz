@@ -8,13 +8,7 @@
     tools:context=".MainActivity">
 
     <!-- Title at the top center -->
-    <Button
-        android:id="@+id/logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/black"/>
+
     <TextView
         android:id="@+id/user_details"
         android:layout_width="wrap_content"
@@ -169,4 +163,51 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </GridLayout>
+    <LinearLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:paddingVertical="16dp"
+        android:background="@android:color/transparent">
+
+        <!-- Quiz Icon -->
+        <ImageView
+            android:id="@+id/navigation_quiz"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_quiz"
+            android:scaleType="centerInside" />
+
+        <!-- Settings Icon -->
+        <ImageView
+            android:id="@+id/navigation_settings"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_settings"
+            android:scaleType="centerInside" />
+
+        <!-- Leaderboard Icon -->
+        <ImageView
+            android:id="@+id/navigation_leaderboard"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_leaderboard"
+            android:scaleType="centerInside" />
+
+        <!-- Account Icon -->
+        <ImageView
+            android:id="@+id/navigation_account"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_account"
+            android:scaleType="centerInside"
+            />
+    </LinearLayout>
+
 </RelativeLayout>

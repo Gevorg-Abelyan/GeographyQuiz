@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -142,7 +146,12 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         new AlertDialog.Builder(this)
                 .setTitle(passStatus)
                 .setMessage("Score is " + score + " out of " + totalQuestion)
-                .setPositiveButton("Restart", (dialogInterface, i) -> restartQuiz())
+                .setPositiveButton("Exit", (dialogInterface, i) -> {
+                    updateScoreInFirebase(score); // Save score to Firebase
+                    Intent intent = new Intent(GuessCountryByItsArea.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                })
                 .setCancelable(false)
                 .show();
     }
@@ -154,6 +163,15 @@ public class GuessCountryByItsArea extends AppCompatActivity implements View.OnC
         totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
         scoreTextView.setText("Score: " + score);
         loadNewQuestion();
+    }
+
+    private void updateScoreInFirebase(int score) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String uid = user.getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(uid).child("score");
+            ref.setValue(score);
+        }
     }
 
     void showExitConfirmationDialog() {
