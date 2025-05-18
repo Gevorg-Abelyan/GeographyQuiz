@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
     TextView totalQuestionsTextView;
     TextView questionTextView;
     TextView scoreTextView;
+    TextView timerTextView;
     Button ansA, ansB, ansC, ansD;
     Button submitBtn;
     ImageView exitImageView;
@@ -33,6 +35,9 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
     Button selectedButton = null;
     Handler handler = new Handler();
     boolean isSubmitClicked = false;
+    private static final int TIMER_DURATION = 10;
+    private int timeLeft = TIMER_DURATION;
+    private CountDownTimer timer;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -42,6 +47,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         totalQuestionsTextView = findViewById(R.id.total_question);
         questionTextView = findViewById(R.id.question);
         scoreTextView = findViewById(R.id.score_text);
+        timerTextView = findViewById(R.id.timer_text);
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
         ansC = findViewById(R.id.ans_C);
@@ -56,10 +62,40 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         submitBtn.setOnClickListener(this);
         exitImageView.setOnClickListener(view -> showExitConfirmationDialog());
 
-
         totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
         scoreTextView.setText("Score: " + score);
         loadNewQuestion();
+    }
+
+    private void startTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        timeLeft = TIMER_DURATION;
+        timerTextView.setText(String.valueOf(timeLeft));
+        
+        timer = new CountDownTimer(TIMER_DURATION * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeft = (int) (millisUntilFinished / 1000);
+                timerTextView.setText(String.valueOf(timeLeft));
+                
+                if (timeLeft <= 3) {
+                    timerTextView.setTextColor(Color.RED);
+                } else {
+                    timerTextView.setTextColor(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                if (!isSubmitClicked) {
+                    String correctAnswer = QuestionAnswerGeneralKnowledge.correctAnswers[currentQuestionIndex];
+                    highlightCorrectAnswer(correctAnswer);
+                    isSubmitClicked = true;
+                }
+            }
+        }.start();
     }
 
     @Override
@@ -88,6 +124,9 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
     }
 
     void checkAnswer() {
+        if (timer != null) {
+            timer.cancel();
+        }
         String correctAnswer = QuestionAnswerGeneralKnowledge.correctAnswers[currentQuestionIndex];
 
         if (selectedAnswer.equals(correctAnswer)) {
@@ -143,6 +182,8 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
         ansC.setText(QuestionAnswerGeneralKnowledge.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswerGeneralKnowledge.choices[currentQuestionIndex][3]);
         selectedButton = null;
+        isSubmitClicked = false;
+        startTimer();
     }
 
     void finishQuiz() {
@@ -151,7 +192,7 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
                 .setTitle(passStatus)
                 .setMessage("Score is " + score + " out of " + totalQuestion)
                 .setPositiveButton("Exit", (dialogInterface, i) -> {
-                    updateScoreInFirebase(score); // Save score to Firebase
+                    updateScoreInFirebase(score);
                     Intent intent = new Intent(GeographyGeneralKnowledge.this, MainActivity.class);
                     startActivity(intent);
                     finish();
@@ -202,5 +243,13 @@ public class GeographyGeneralKnowledge extends AppCompatActivity implements View
                 .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
                 .setCancelable(false)
                 .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 }

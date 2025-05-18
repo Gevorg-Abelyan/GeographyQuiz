@@ -10,24 +10,27 @@ import java.util.List;
 
 public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.ViewHolder> {
     private List<User> userList;
+    private int startRank;
 
-    public LeaderboardAdapter(List<User> userList) {
+    public LeaderboardAdapter(List<User> userList, int startRank) {
         this.userList = userList;
+        this.startRank = startRank;  // Usually 4 since top 3 are already displayed
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_leaderboard_user, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_leaderboard_user, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User user = userList.get(position);
-        holder.rank.setText(String.valueOf(position + 4)); // Top 3 are in the card
+        holder.rank.setText("#" + (position + startRank));
         holder.username.setText(user.getUsername());
-        holder.score.setText(String.valueOf(user.getScore()));
+        holder.score.setText("Score: " + user.getScore());
     }
 
     @Override
@@ -37,6 +40,7 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView rank, username, score;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             rank = itemView.findViewById(R.id.rank);
@@ -44,4 +48,4 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
             score = itemView.findViewById(R.id.score);
         }
     }
-} 
+}

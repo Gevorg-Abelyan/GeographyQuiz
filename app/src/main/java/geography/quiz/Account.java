@@ -25,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class Account extends AppCompatActivity {
-    private ImageView settingsIcon, leaderboardIcon, accountIcon;
+    private ImageView settingsIcon, leaderboardIcon, quizIcon;
     private TextView headerUsername, headerEmail, headerScore;
     private TextInputEditText currentPasswordInput, newPasswordInput, newUsernameInput;
     private MaterialButton btnChangePassword, btnLogout, btnDeleteAccount, btnChangeUsername;
@@ -53,7 +53,7 @@ public class Account extends AppCompatActivity {
         // Navigation icons
         settingsIcon = findViewById(R.id.navigation_quiz);
         leaderboardIcon = findViewById(R.id.navigation_leaderboard);
-        accountIcon = findViewById(R.id.navigation_account);
+        quizIcon = findViewById(R.id.navigation_quiz);
 
         // Text views
         headerUsername = findViewById(R.id.headerUsername);
@@ -74,9 +74,23 @@ public class Account extends AppCompatActivity {
 
     private void setupClickListeners() {
         // Navigation
-        settingsIcon.setOnClickListener(view -> startActivity(new Intent(this, Settings.class)));
-        leaderboardIcon.setOnClickListener(view -> startActivity(new Intent(this, Leaderboard.class)));
-        accountIcon.setOnClickListener(view -> startActivity(new Intent(this, Account.class)));
+
+        
+        leaderboardIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("Leaderboard")) {
+                startActivity(new Intent(this, Leaderboard.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
+
+        quizIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("MainActivity")) {
+                startActivity(new Intent(this, MainActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
 
         // Account management
         btnChangePassword.setOnClickListener(view -> changePassword());
@@ -151,7 +165,7 @@ public class Account extends AppCompatActivity {
         }
     }
 
-    // Method to update user's score
+
     public void updateScore(int points) {
         if (currentUser != null && userRef != null) {
             userRef.child("score").get().addOnCompleteListener(task -> {
@@ -183,15 +197,26 @@ public class Account extends AppCompatActivity {
         }
 
         if (currentUser != null) {
+            // Update in Firebase Auth
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(newUsername)
                     .build();
 
             currentUser.updateProfile(profileUpdates)
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(Account.this, "Username updated successfully", Toast.LENGTH_SHORT).show();
-                        newUsernameInput.setText("");
-                        loadUserData(); // Refresh the displayed username
+                        // After successful Auth update, update in Realtime Database
+                        String uid = currentUser.getUid();
+                        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(uid);
+                        
+                        userRef.child("username").setValue(newUsername)
+                            .addOnSuccessListener(aVoid1 -> {
+                                Toast.makeText(Account.this, "Username updated successfully", Toast.LENGTH_SHORT).show();
+                                newUsernameInput.setText("");
+                                headerUsername.setText(newUsername); // Update UI immediately
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(Account.this, "Failed to update username in database: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                     })
                     .addOnFailureListener(e -> {
                         Toast.makeText(Account.this, "Failed to update username: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -280,11 +305,11 @@ public class Account extends AppCompatActivity {
 
     private void deleteAccount(String password) {
         if (currentUser != null && currentUser.getEmail() != null) {
-            // Reauthenticate user before deleting account
+
             AuthCredential credential = EmailAuthProvider.getCredential(currentUser.getEmail(), password);
             currentUser.reauthenticate(credential)
                     .addOnSuccessListener(aVoid -> {
-                        // Delete account after reauthentication
+
                         currentUser.delete()
                                 .addOnSuccessListener(aVoid1 -> {
                                     Toast.makeText(Account.this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
@@ -310,9 +335,9 @@ public class Account extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
-                        // Get all data as a map
+
                         Object data = snapshot.getValue();
-                        // Create a detailed message
+
                         StringBuilder message = new StringBuilder("Database Contents:\n");
                         message.append("Username: ").append(snapshot.child("username").getValue()).append("\n");
                         message.append("Email: ").append(snapshot.child("email").getValue()).append("\n");

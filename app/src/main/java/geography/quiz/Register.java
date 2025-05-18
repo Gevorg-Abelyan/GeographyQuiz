@@ -26,7 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class Register extends AppCompatActivity {
-    TextInputEditText editTextEmail, editTextPassword;
+    TextInputEditText editTextEmail, editTextPassword, editTextUsername, editTextConfirmPassword;
     Button buttonReg;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
@@ -51,6 +51,8 @@ public class Register extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.email);
         editTextPassword = findViewById(R.id.password);
+        editTextUsername = findViewById(R.id.username);
+        editTextConfirmPassword = findViewById(R.id.confirmPassword);
         buttonReg = findViewById(R.id.btn_register);
         progressBar = findViewById(R.id.progressBar);
         textView = findViewById(R.id.loginNow);
@@ -68,12 +70,33 @@ public class Register extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 progressBar.setVisibility(View.VISIBLE);
-                String email = editTextEmail.getText().toString();
-                String password = editTextPassword.getText().toString();
-                String username = email.substring(0, email.indexOf('@'));
+                String email = editTextEmail.getText().toString().trim();
+                String password = editTextPassword.getText().toString().trim();
+                String confirmPassword = editTextConfirmPassword.getText().toString().trim();
+                String username = editTextUsername.getText().toString().trim();
 
-                if (TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
-                    Toast.makeText(Register.this, "Email and password required", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(username)) {
+                    Toast.makeText(Register.this, "Username required", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(Register.this, "Email required", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(Register.this, "Password required", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (!password.equals(confirmPassword)) {
+                    Toast.makeText(Register.this, "Passwords do not match", Toast.LENGTH_SHORT).show();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (password.length() < 6) {
+                    Toast.makeText(Register.this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                     return;
                 }
@@ -87,8 +110,8 @@ public class Register extends AppCompatActivity {
                                     FirebaseUser firebaseUser = mAuth.getCurrentUser();
                                     String uid = firebaseUser.getUid();
 
-                                    // Save user in Realtime Database
-                                    User user = new User(email, password, username);
+                                    // Save user in Realtime Database (do not store password)
+                                    User user = new User(email, "", username);
                                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
                                     ref.child(uid).setValue(user);
 
@@ -99,7 +122,6 @@ public class Register extends AppCompatActivity {
                             }
                         });
             }
-
         });
     }
 

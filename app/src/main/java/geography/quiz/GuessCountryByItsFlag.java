@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.CountDownTimer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -24,6 +25,7 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
     ImageView flagImageView, exitImageView;
     Button ansA, ansB, ansC, ansD;
     Button submitBtn;
+    TextView timerTextView;
     int score = 0;
     int totalQuestion = QuestionAnswerFlags.flagImages.length;
     int currentQuestionIndex = 0;
@@ -31,6 +33,9 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
     Button selectedButton = null;
     Handler handler = new Handler();
     boolean isSubmitClicked = false;
+    private static final int TIMER_DURATION = 10;
+    private int timeLeft = TIMER_DURATION;
+    private CountDownTimer timer;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -46,6 +51,7 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
         ansC = findViewById(R.id.ans_C);
         ansD = findViewById(R.id.ans_D);
         submitBtn = findViewById(R.id.submit_btn);
+        timerTextView = findViewById(R.id.timer_text);
 
         ansA.setOnClickListener(this);
         ansB.setOnClickListener(this);
@@ -83,8 +89,41 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
             }
         }
     }
+    private void startTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        timeLeft = TIMER_DURATION;
+        timerTextView.setText(String.valueOf(timeLeft));
+
+        timer = new CountDownTimer(TIMER_DURATION * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeft = (int) (millisUntilFinished / 1000);
+                timerTextView.setText(String.valueOf(timeLeft));
+
+                if (timeLeft <= 3) {
+                    timerTextView.setTextColor(Color.RED);
+                } else {
+                    timerTextView.setTextColor(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                if (!isSubmitClicked) {
+                    String correctAnswer = QuestionAnswerGeneralKnowledge.correctAnswers[currentQuestionIndex];
+                    highlightCorrectAnswer(correctAnswer);
+                    isSubmitClicked = true;
+                }
+            }
+        }.start();
+    }
 
     void checkAnswer() {
+        if (timer != null) {
+            timer.cancel();
+        }
         String correctAnswer = QuestionAnswerFlags.correctAnswers[currentQuestionIndex];
 
         if (selectedAnswer.equals(correctAnswer)) {
@@ -140,6 +179,8 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
         ansC.setText(QuestionAnswerFlags.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswerFlags.choices[currentQuestionIndex][3]);
         selectedButton = null;
+        isSubmitClicked = false;
+        startTimer();
     }
 
     void finishQuiz() {
@@ -199,5 +240,12 @@ public class GuessCountryByItsFlag extends AppCompatActivity implements View.OnC
                 .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
                 .setCancelable(false)
                 .show();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 }

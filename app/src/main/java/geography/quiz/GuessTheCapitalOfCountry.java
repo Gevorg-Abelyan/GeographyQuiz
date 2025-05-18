@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.CountDownTimer;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +26,7 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
     Button ansA, ansB, ansC, ansD;
     Button submitBtn;
     ImageView exitImageView;
+    TextView timerTextView;
     int score = 0;
     int totalQuestion = QuestionAnswerCapital.question.length;
     int currentQuestionIndex = 0;
@@ -32,15 +34,21 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
     Button selectedButton = null;
     Handler handler = new Handler();
     boolean isSubmitClicked = false;
+    private static final int TIMER_DURATION = 10;
+    private int timeLeft = TIMER_DURATION;
+    private CountDownTimer timer;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guess_the_capital_of_country);
+        
+        // Initialize all views
         totalQuestionsTextView = findViewById(R.id.total_question);
         scoreTextView = findViewById(R.id.score_text);
         questionTextView = findViewById(R.id.question);
+        timerTextView = findViewById(R.id.timer_text);
         ansA = findViewById(R.id.ans_A);
         ansB = findViewById(R.id.ans_B);
         ansC = findViewById(R.id.ans_C);
@@ -48,6 +56,7 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         submitBtn = findViewById(R.id.submit_btn);
         exitImageView = findViewById(R.id.exit_image);
 
+        // Set click listeners
         ansA.setOnClickListener(this);
         ansB.setOnClickListener(this);
         ansC.setOnClickListener(this);
@@ -55,8 +64,12 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         submitBtn.setOnClickListener(this);
         exitImageView.setOnClickListener(view -> showExitConfirmationDialog());
 
+        // Set initial text
         totalQuestionsTextView.setText("Question " + (currentQuestionIndex + 1) + "/" + totalQuestion);
         scoreTextView.setText("Score: " + score);
+        timerTextView.setText(String.valueOf(TIMER_DURATION));
+
+        // Load first question
         loadNewQuestion();
     }
 
@@ -84,9 +97,41 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
             }
         }
     }
+    private void startTimer() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        timeLeft = TIMER_DURATION;
+        timerTextView.setText(String.valueOf(timeLeft));
 
+        timer = new CountDownTimer(TIMER_DURATION * 1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeft = (int) (millisUntilFinished / 1000);
+                timerTextView.setText(String.valueOf(timeLeft));
+
+                if (timeLeft <= 3) {
+                    timerTextView.setTextColor(Color.RED);
+                } else {
+                    timerTextView.setTextColor(Color.BLACK);
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                if (!isSubmitClicked) {
+                    String correctAnswer = QuestionAnswerGeneralKnowledge.correctAnswers[currentQuestionIndex];
+                    highlightCorrectAnswer(correctAnswer);
+                    isSubmitClicked = true;
+                }
+            }
+        }.start();
+    }
 
     void checkAnswer() {
+        if (timer != null) {
+            timer.cancel();
+        }
         String correctAnswer = QuestionAnswerCapital.correctAnswers[currentQuestionIndex];
 
         if (selectedAnswer.equals(correctAnswer)) {
@@ -142,6 +187,8 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
         ansC.setText(QuestionAnswerCapital.choices[currentQuestionIndex][2]);
         ansD.setText(QuestionAnswerCapital.choices[currentQuestionIndex][3]);
         selectedButton = null;
+        isSubmitClicked = false;
+        startTimer();
     }
 
     void finishQuiz() {
@@ -200,5 +247,12 @@ public class GuessTheCapitalOfCountry extends AppCompatActivity implements View.
                 .setNegativeButton("No", (dialogInterface, i) -> dialogInterface.dismiss())
                 .setCancelable(false)
                 .show();
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (timer != null) {
+            timer.cancel();
+        }
     }
 }

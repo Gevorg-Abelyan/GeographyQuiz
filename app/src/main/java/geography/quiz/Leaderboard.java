@@ -36,16 +36,36 @@ public class Leaderboard extends AppCompatActivity {
 
         fetchLeaderboard();
 
-        // Navigation
-        ImageView settingsIcon = findViewById(R.id.navigation_settings);
+
         ImageView leaderboardIcon = findViewById(R.id.navigation_leaderboard);
         ImageView accountIcon = findViewById(R.id.navigation_account);
         ImageView quizIcon = findViewById(R.id.navigation_quiz);
 
-        settingsIcon.setOnClickListener(view -> startActivity(new Intent(this, Settings.class)));
-        leaderboardIcon.setOnClickListener(view -> startActivity(new Intent(this, Leaderboard.class)));
-        accountIcon.setOnClickListener(view -> startActivity(new Intent(this, Account.class)));
-        quizIcon.setOnClickListener(view -> startActivity(new Intent(this, MainActivity.class)));
+
+        
+        leaderboardIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("Leaderboard")) {
+                startActivity(new Intent(this, Leaderboard.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
+        
+        accountIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("Account")) {
+                startActivity(new Intent(this, Account.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
+        
+        quizIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("MainActivity")) {
+                startActivity(new Intent(this, MainActivity.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
     }
 
     private void fetchLeaderboard() {
@@ -73,7 +93,7 @@ public class Leaderboard extends AppCompatActivity {
     }
 
     private void updateLeaderboardUI() {
-        // Top 3 users
+        // Top 3 cards
         if (userList.size() > 0) {
             User first = userList.get(0);
             firstUsername.setText(first.getUsername());
@@ -82,6 +102,7 @@ public class Leaderboard extends AppCompatActivity {
             firstUsername.setText("-");
             firstScore.setText("-");
         }
+
         if (userList.size() > 1) {
             User second = userList.get(1);
             secondUsername.setText(second.getUsername());
@@ -90,6 +111,7 @@ public class Leaderboard extends AppCompatActivity {
             secondUsername.setText("-");
             secondScore.setText("-");
         }
+
         if (userList.size() > 2) {
             User third = userList.get(2);
             thirdUsername.setText(third.getUsername());
@@ -98,9 +120,12 @@ public class Leaderboard extends AppCompatActivity {
             thirdUsername.setText("-");
             thirdScore.setText("-");
         }
-        // The rest
-        List<User> rest = userList.size() > 3 ? userList.subList(3, userList.size()) : new ArrayList<>();
-        adapter = new LeaderboardAdapter(rest);
+
+        // Next 7 users in RecyclerView
+        int end = Math.min(userList.size(), 10); // Total top 10
+        List<User> rest = userList.size() > 3 ? userList.subList(3, end) : new ArrayList<>();
+        adapter = new LeaderboardAdapter(rest, 4); // Start rank at 4
         leaderboardRecyclerView.setAdapter(adapter);
     }
+
 }

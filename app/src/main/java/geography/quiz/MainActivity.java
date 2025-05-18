@@ -51,12 +51,27 @@ public class MainActivity extends AppCompatActivity {
         flagLayout.setOnClickListener(view -> openActivity(GuessCountryByItsFlag.class));
         areaLayout.setOnClickListener(view -> openActivity(GuessCountryByItsArea.class));
         capitalLayout.setOnClickListener(view -> openActivity(GuessTheCapitalOfCountry.class));
-        settingsIcon = findViewById(R.id.navigation_settings);
-        leaderboardIcon = findViewById(R.id.navigation_quiz);
+
+        leaderboardIcon = findViewById(R.id.navigation_leaderboard);
         accountIcon = findViewById(R.id.navigation_account);
-        settingsIcon.setOnClickListener(view -> startActivity(new Intent(this, Settings.class)));
-        leaderboardIcon.setOnClickListener(view -> startActivity(new Intent(this, Leaderboard.class)));
-        accountIcon.setOnClickListener(view -> startActivity(new Intent(this, Account.class)));
+        
+
+        
+        leaderboardIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("Leaderboard")) {
+                startActivity(new Intent(this, Leaderboard.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
+        
+        accountIcon.setOnClickListener(view -> {
+            if (!getClass().getSimpleName().equals("Account")) {
+                startActivity(new Intent(this, Account.class));
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
     }
 
 
